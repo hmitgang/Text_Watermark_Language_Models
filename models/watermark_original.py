@@ -8,8 +8,8 @@ import hashlib
 from scipy.stats import norm
 import gensim
 import pdb
-from transformers import BertForMaskedLM as WoBertForMaskedLM
-from wobert import WoBertTokenizer
+# from transformers import BertForMaskedLM as WoBertForMaskedLM
+# from wobert import WoBertTokenizer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 from transformers import BertForMaskedLM, BertTokenizer, RobertaForSequenceClassification, RobertaTokenizer
@@ -58,8 +58,8 @@ class watermark_model:
         if language == 'Chinese':
             self.relatedness_tokenizer = AutoTokenizer.from_pretrained("IDEA-CCNL/Erlangshen-Roberta-330M-Similarity")
             self.relatedness_model = AutoModelForSequenceClassification.from_pretrained("IDEA-CCNL/Erlangshen-Roberta-330M-Similarity").to(self.device)
-            self.tokenizer = WoBertTokenizer.from_pretrained("junnyu/wobert_chinese_plus_base")
-            self.model = WoBertForMaskedLM.from_pretrained("junnyu/wobert_chinese_plus_base", output_hidden_states=True).to(self.device)
+            # self.tokenizer = WoBertTokenizer.from_pretrained("junnyu/wobert_chinese_plus_base")
+            # self.model = WoBertForMaskedLM.from_pretrained("junnyu/wobert_chinese_plus_base", output_hidden_states=True).to(self.device)
             self.w2v_model = gensim.models.KeyedVectors.load_word2vec_format('sgns.merge.word.bz2', binary=False, unicode_errors='ignore', limit=50000)
         elif language == 'English':
             self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')

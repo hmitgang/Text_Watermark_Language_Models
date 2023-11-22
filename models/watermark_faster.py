@@ -8,8 +8,8 @@ import hashlib
 from scipy.stats import norm
 import gensim
 import pdb
-from transformers import BertForMaskedLM as WoBertForMaskedLM
-from wobert import WoBertTokenizer
+# from transformers import BertForMaskedLM as WoBertForMaskedLM
+# from wobert import WoBertTokenizer
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 from transformers import BertForMaskedLM, BertTokenizer, RobertaForSequenceClassification, RobertaTokenizer
@@ -21,6 +21,11 @@ import paddle
 from jieba import posseg
 paddle.enable_static()
 import re
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+# nltk.download('wordnet')
+
+
 def cut_sent(para):
     para = re.sub('([。！？\?])([^”’])', r'\1\n\2', para)  
     para = re.sub('([。！？\?][”’])([^，。！？\?\n ])', r'\1\n\2', para)  
@@ -57,8 +62,8 @@ class watermark_model:
         if language == 'Chinese':
             self.relatedness_tokenizer = AutoTokenizer.from_pretrained("IDEA-CCNL/Erlangshen-Roberta-330M-Similarity")
             self.relatedness_model = AutoModelForSequenceClassification.from_pretrained("IDEA-CCNL/Erlangshen-Roberta-330M-Similarity").to(self.device)
-            self.tokenizer = WoBertTokenizer.from_pretrained("junnyu/wobert_chinese_plus_base")
-            self.model = WoBertForMaskedLM.from_pretrained("junnyu/wobert_chinese_plus_base", output_hidden_states=True).to(self.device)
+            # self.tokenizer = WoBertTokenizer.from_pretrained("junnyu/wobert_chinese_plus_base")
+            # self.model = WoBertForMaskedLM.from_pretrained("junnyu/wobert_chinese_plus_base", output_hidden_states=True).to(self.device)
             self.w2v_model = gensim.models.KeyedVectors.load_word2vec_format('sgns.merge.word.bz2', binary=False, unicode_errors='ignore', limit=50000)
         elif language == 'English':
             self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
@@ -343,6 +348,8 @@ class watermark_model:
         init_candidates, new_index_space = self.candidates_gen(tokens,index_space,input_text, 8, 0)
         if len(new_index_space)==0:
             return text
+        
+        # breakpoint()
         enhanced_candidates, new_index_space = self.filter_candidates(init_candidates,tokens,new_index_space,input_text)
         
         enhanced_candidates, new_index_space = self.get_candidate_encodings(tokens, enhanced_candidates, new_index_space)
