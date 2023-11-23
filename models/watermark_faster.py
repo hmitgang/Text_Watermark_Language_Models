@@ -38,10 +38,6 @@ def cut_sent(para):
 def is_subword(token: str): 
     return token.startswith('##')
 
-def binary_encoding_function(token):
-    hash_value = int(hashlib.sha256(token.encode('utf-8')).hexdigest(), 16)
-    random_bit = hash_value % 2
-    return random_bit
 
 def is_similar(x, y, threshold=0.5):
     distance = Levenshtein.distance(x, y)
@@ -74,6 +70,11 @@ class watermark_model:
             nltk.download('stopwords')
             self.stop_words = set(stopwords.words('english'))
             self.nlp = spacy.load('en_core_web_sm')
+
+    def binary_encoding_function(self, token):
+        hash_value = int(hashlib.sha256(token.encode('utf-8')).hexdigest(), 16)
+        random_bit = hash_value % 2
+        return random_bit
 
     def cut(self,ori_text,text_len):
         if self.language == 'Chinese':
@@ -308,9 +309,9 @@ class watermark_model:
             
             for idx, candidate in enumerate(init_candidates):
                 if masked_token_index-1 in new_index_space:
-                    bit = binary_encoding_function(best_candidates[-1]+candidate[0])
+                    bit = self.binary_encoding_function(best_candidates[-1]+candidate[0])
                 else:
-                    bit = binary_encoding_function(tokens[masked_token_index-1]+candidate[0])
+                    bit = self.binary_encoding_function(tokens[masked_token_index-1]+candidate[0])
                 
                 if bit==1:
                     filtered_candidates.append(candidate)
@@ -336,7 +337,7 @@ class watermark_model:
         index_space = []
        
         for masked_token_index in range(start_index+1, end_index-1):
-            binary_encoding = binary_encoding_function(tokens[masked_token_index - 1] + tokens[masked_token_index])
+            binary_encoding = self.binary_encoding_function(tokens[masked_token_index - 1] + tokens[masked_token_index])
             if binary_encoding == 1 and masked_token_index-1 not in index_space:
                 continue
             if not self.pos_filter(tokens,masked_token_index,input_text):
@@ -398,7 +399,7 @@ class watermark_model:
             for index in range(1,len(tokens)-1):
                 if not self.pos_filter(tokens,index,text):
                     continue
-                bit = binary_encoding_function(tokens[index-1]+tokens[index])
+                bit = self.binary_encoding_function(tokens[index-1]+tokens[index])
                 encodings.append(bit)
         return encodings
 
@@ -452,7 +453,7 @@ class watermark_model:
             # pdb.set_trace()
             for j,idx in enumerate(new_index_space):
                 if len(enhanced_candidates[j])>1:
-                    bit = binary_encoding_function(tokens[idx-1]+tokens[idx])
+                    bit = self.binary_encoding_function(tokens[idx-1]+tokens[idx])
                     encodings.append(bit)
         return encodings
 
