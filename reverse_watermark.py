@@ -46,15 +46,12 @@ class clear_watermark(watermark_model):
         if len(new_index_space)==0:
             return text
         
-        # breakpoint()
         enhanced_candidates, new_index_space = self.filter_candidates(init_candidates,tokens,new_index_space,input_text)
         
         enhanced_candidates, new_index_space = self.get_candidate_encodings(tokens, enhanced_candidates, new_index_space)
         
         for init_candidate, masked_token_index in zip(enhanced_candidates, new_index_space):
             tokens[masked_token_index] = init_candidate
-
-        breakpoint()
 
         watermarked_text = self.tokenizer.convert_tokens_to_string(tokens[1:-1])
     
@@ -83,25 +80,29 @@ text = ("Flocking is a type of coordinated group behavior that is exhibited by a
 "food more efficiently or defend themselves against predators more effectively when they work together."
 )
 
-# watermarked_text = model.embed(text)
+
+is_watermark, p_value, n, ones, z_value = model.watermark_detector_precise(text)
+
+print("===========================")
+print(f"Original Text:")
+print(text)
+print(f"FROM ORIGINAL MODEL: p_value: {p_value}, n: {n}, ones: {ones}, z_value: {z_value}, confidence: {(1 - p_value) * 100:.2f}%")
+print("---")
+
+watermarked_text = model.embed(text)
+
+is_watermark, p_value, n, ones, z_value = model.watermark_detector_precise(watermarked_text)
+
+print(f"Watermarked Text:")
+print(watermarked_text)
+print(f"FROM ORIGINAL MODEL: p_value: {p_value}, n: {n}, ones: {ones}, z_value: {z_value}, confidence: {(1 - p_value) * 100:.2f}%")
+
+is_watermark, p_value, n, ones, z_value = clear_model.watermark_detector_precise(watermarked_text)
+
+print(f"FROM CLEAR MODEL   : p_value: {p_value}, n: {n}, ones: {ones}, z_value: {z_value}, confidence: {(1 - p_value) * 100:.2f}%")
 
 
-# is_watermark, p_value, n, ones, z_value = model.watermark_detector_precise(watermarked_text)
-
-# print("===========================")
-# print(f"Original Text:")
-# print(text)
-# print("---")
-# print(f"Watermarked Text:")
-# print(watermarked_text)
-# print(f"FROM ORIGINAL MODEL: p_value: {p_value}, n: {n}, ones: {ones}, z_value: {z_value}, confidence: {(1 - p_value) * 100:.2f}%")
-
-# is_watermark, p_value, n, ones, z_value = clear_model.watermark_detector_precise(watermarked_text)
-
-# print(f"FROM CLEAR MODEL   : p_value: {p_value}, n: {n}, ones: {ones}, z_value: {z_value}, confidence: {(1 - p_value) * 100:.2f}%")
-
-
-watermarked_text = "Flocking is a kind of coordinated team behavior that is displayed by birds of several species , notably birds , fish , and insects . It is characterized by the ability of the organisms to move together in a coordinated and cohesive way , as if they were a single entity .Flocking behavior is suggested to have evolved as a way for animals to expand their likelihood of survival by acting together as a group . For instance , flocking birds could be able to locate food more efficiently or defend themselves against prey more effectively when they work together ."
+# watermarked_text = "Flocking is a kind of coordinated team behavior that is displayed by birds of several species , notably birds , fish , and insects . It is characterized by the ability of the organisms to move together in a coordinated and cohesive way , as if they were a single entity .Flocking behavior is suggested to have evolved as a way for animals to expand their likelihood of survival by acting together as a group . For instance , flocking birds could be able to locate food more efficiently or defend themselves against prey more effectively when they work together ."
 # print("===========================")
 # print(f"Original Text:")
 # print(text)
