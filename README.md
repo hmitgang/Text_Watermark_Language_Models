@@ -1,4 +1,4 @@
-### Harrison's Updates
+### Updates
 
 In `reverse_watermark.py`, we extend the watermarking class. In `secret_watermark`, we add a secret to the hashing function. As seen in the Output, this adds confidentiality to the watermark. In other words, you need the secret to determine whether the text has been watermarked.
 
